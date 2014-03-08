@@ -13,7 +13,7 @@ a cryptocurrency which supports reddit-style user generated content. Each post a
 
 ### about posts
 * a string of characters which is limited by a maximum length. This maximum length is voted on by shareholders.
-* a post can optionally be a comment on another post.
+* a post can optionally be a comment on another post. (comments can have comments recursively) 
 * Each post has an amount of value
 * there can only exist a limited number of posts at a time. If this limit is surpassed, then the least valuable post disappears. 
 * If a post dies, then all of the comments on that post die as well.
@@ -31,17 +31,23 @@ If you own 1/4th of all the redditcoin, then you have 1/4th chance of being sele
 * cost to buy a user name or to switch user names.
 * cost paid out every block in order to continue owning a user name.
 * minimum amount of reputation to purchase.
-* The miner fee associated to each type of transaction.
+* The miner fee associated to each type of transaction. (7 numbers that are each voted on independently)
 
 ### numbers that have to be between 0 and 1
 I need a formula to fairly have shareholders determine these numbers which have bounds of 0 and 1.
 * portion change to numbers that shareholder raffle causes every block. 
 * P1=portion of upvote that the post increases in value by
 * P2=portion of upvote that gets paid back to owners of a post
+* P3=portion of comments value that the parent-post increases by. Valuable comments make posts more valuable in this way.
 * each block, all the posts lose the same percentage of value. (This is done so that old posts everntually die of age.) 
+
+### value of a post
+P3 = portion of a comments value that the parent recieved by being it's parent.
+Value = value the post started out with + value it got from upvotes - value it lost from downvotes - value it lost from age + P3*(sum of it's comments values)
 
 ### upvoting
 When upvoting, you spend X coins. X has to be greater than a minimum limit. The post you are upvoting increases in value by a percentage of X. Ownership of the post is re-calculated such that you own X/(all money spend on it) of it. A percentage of X coins are given out to the owners of the post. Each owner recieves coins according to what portion ownership they have.
+Upvoting a comment causes it's parent post to increase in value as well.
 ```
 P1=portion of upvote that the coin increases in value by
 P2=portion of upvote that gets paid back to owners of a post
