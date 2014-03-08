@@ -42,9 +42,11 @@ I need a formula to fairly have shareholders determine these numbers which have 
 
 ### upvoting
 When upvoting, you spend X coins. X has to be greater than a minimum limit. The post you are upvoting increases in value by a percentage of X. Ownership of the post is re-calculated such that you own X/(all money spend on it) of it. A percentage of X coins are given out to the owners of the post. Each owner recieves coins according to what portion ownership they have.
+```
 P1=portion of upvote that the coin increases in value by
 P2=portion of upvote that gets paid back to owners of a post
 Example: There is a post worth 100 coins. You upvote it with 200 coins. (1-P2)*200 of your 200 get deleted, P2*200*(200/(200+100)) of your 200 go to yourself, and P2*200*(100/(200+100)) of the 200 go to the other owners.
+````
 
 ### downvoting
 When downvoting, you spend X coins where X is above a limit. The post you downvoted loses X value.
