@@ -3,20 +3,20 @@ redditcoin
 a cryptocurrency which supports reddit-style user generated content. Each post and comment is a ponzi scheme. You can make profit by upvoting unpopular content which later becomes popular.
 
 ### Types of transactions
-*mint coins (only one allowed per block, the miner gives it to themselves.)
-*send coins to another user.
-*create post
-*upvote post
-*downvote post
-*connect a unique user name to your public key
-*add reputation to a user
+* mint coins (only one allowed per block, the miner gives it to themselves.)
+* send coins to another user.
+* create post
+* upvote post
+* downvote post
+* connect a unique user name to your public key
+* add reputation to a user
 
 ### about posts
-*a string of characters which is limited by a maximum length. This maximum length is voted on by shareholders.
-*a post can optionally be a comment on another post.
-*Each post has an amount of value
-*there can only exist a limited number of posts at a time. If this limit is surpassed, then the least valuable post disappears. 
-*If a post dies, then all of the comments on that post die as well.
+* a string of characters which is limited by a maximum length. This maximum length is voted on by shareholders.
+* a post can optionally be a comment on another post.
+* Each post has an amount of value
+* there can only exist a limited number of posts at a time. If this limit is surpassed, then the least valuable post disappears. 
+* If a post dies, then all of the comments on that post die as well.
 
 ### about shareholder raffle
 There are a lot of numbers in the system which the miners use to verify transactions. The maximum blocksize for example. Each coin is also shares in the redditcoin system. When you create a user name, you also create a dictionary of the constants that you want to vote on, and the ideal value that you want each of those constants to be.
