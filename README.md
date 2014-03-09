@@ -35,6 +35,7 @@ If you own 1/4th of all the redditcoin, then you have 1/4th chance of being sele
 
 ### numbers that have to be between 0 and 1
 I need a formula to fairly have shareholders determine these numbers which have bounds of 0 and 1.
+Say that the number is currently x, and that the shareholder who won this block wants the number to be bigger, then the number will become x+(1-x)/100. IF instead the shareholder wanted the number to be smaller, then the number would become x*99/100
 * portion change to numbers that shareholder raffle causes every block. 
 * P1=portion of upvote that the post increases in value by
 * P2=portion of upvote that gets paid back to owners of a post
