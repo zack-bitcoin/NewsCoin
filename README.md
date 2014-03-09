@@ -43,13 +43,18 @@ Let the slipperiness of bounded numbers be a number = S. Say that the bounded nu
 
 ### value of a post
 P3 = portion of a comments value that the parent recieved by being it's parent.
+
 Value = value the post started out with + value it got from upvotes - value it lost from downvotes - value it lost from age + P3*(sum of it's comment's values)
 
 ### upvoting
 P=portion of upvote that gets paid to owners of a post
+
 When upvoting, you spend X coins. X has to be greater than a minimum limit. The post you are upvoting increases in value by (1-P) of X. Ownership of the post is re-calculated such that you own (1-P)X/(All value added to this post) of it. P*X coins are given out to the other owners of the post. Each owner recieves coins according to what portion ownership they have.
+
 Upvoting a comment causes it's parent post to increase in value by (P3)(1-P)(X), and grandparent post increases by (P3)^2(1-P)^2(X)...
+
 The owners of the parent post get paid (P3)(P)(1-P)(X), and owners of grandparent post get paid (P3)^2(P)(1-P)^2(X)...
+
 For the upvote transaction to be valid, you must own >=0 funds at the end.
 
 ### downvoting
