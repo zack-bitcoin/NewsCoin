@@ -1,6 +1,6 @@
 redditcoin
 ==========
-a cryptocurrency which supports reddit-style user generated content. Each post and comment is a ponzi scheme. You can make profit by upvoting unpopular content which later becomes popular.
+a cryptocurrency which supports reddit-style user generated content. Each post and comment is a ponzi scheme. When you upvote content, you become a partial owner of it. Every time content its upvoted, all the owners make money.
 
 ### Types of transactions
 * mint coins (only one allowed per block, the miner gives it to themselves.)
