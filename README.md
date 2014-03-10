@@ -1,10 +1,10 @@
-redditcoin
+NEWScoin
 ==========
-a cryptocurrency which supports reddit-style user generated content. Each post and comment is a ponzi scheme. When you upvote content, you become a partial owner of it. Every time content its upvoted, all the owners make money.
+NewsCoin is a cryptocurrency (NEWS) and a decentralized application which supports reddit-style aggregation of user generated content. Each post and comment has its own balance. When you upvote content, you become a partial owner of it through sending NEWS to it. Every time content is upvoted you buy a stake of the post and all the early stakeholders make profit according to their stake and internal order.
 
 ### Types of transactions
-* mint coins (only one allowed per block, the miner gives it to themselves.)
-* send coins to another user.
+* mint NEWS (only one allowed per block, the miner gives it to themselves.)
+* send NEWS to another user.
 * create post
 * upvote post
 * downvote post
@@ -19,14 +19,14 @@ a cryptocurrency which supports reddit-style user generated content. Each post a
 * If a post dies, then all of the comments on that post die as well.
 
 ### about shareholder raffle
-There are a lot of numbers in the system which the miners use to verify transactions. The maximum blocksize for example. Each coin is also shares in the redditcoin system. When you create a user name, you also create a dictionary of the numbers that you want to raffle for, and the ideal value that you want each of those numbers to be. Every block, a single shareholder is selected at random. We look at what his ideal constants are, and adjust the constants by a certain portion in his preference. If you own 1/4th of all the redditcoin, then you have 1/4th chance of winning the raffle in the next block.
+This cryptocurrency actively reprograms itself. All the NEWS-holders vote to determine the values of a lot of numbers which are used to verify blocks. Each NEWS is shares in NEWSnet. When you create a user name, you also create a dictionary of the numbers that you want to raffle for, and the ideal value that you want each of those numbers to be. Every block, a single shareholder is selected at random. We look at what his ideal constants are, and adjust the constants by a certain portion in his preference. If you own 1/4th of all the NEWS, then you have 1/4th chance of winning the raffle in the next block.
 
 ### unbounded numbers that shareholders vote on. (for practical purposes, these numbers are rounded up to the nearest integer.)
 * max length of a post.
 * max length of a block.
-* min amount of coins that can be sent to another user.
-* min amount of coins to upvote with.
-* min amount of coins to downvote with.
+* min amount of NEWS that can be sent to another user.
+* min amount of NEWS to upvote with.
+* min amount of NEWS to downvote with.
 * max number of posts before we start deleting the least valuable posts.
 * cost to buy a user name or to switch user names.
 * cost paid out every block in order to continue owning a user name.
@@ -49,7 +49,7 @@ Value = value the post started out with + value it got from upvotes - value it l
 ### upvoting
 P=portion of upvote that gets paid to owners of a post
 
-When upvoting, you spend X coins. X has to be greater than a minimum limit. The post you are upvoting increases in value by (1-P) of X. Ownership of the post is re-calculated such that you own (1-P)X/(All value added to this post) of it. P*X coins are given out to the other owners of the post. Each owner recieves coins according to what portion ownership they have.
+When upvoting, you spend X NEWS. X has to be greater than a minimum limit. The post you are upvoting increases in value by (1-P) of X. Ownership of the post is re-calculated such that you own (1-P)X/(All value added to this post) of it. P*X NEWS are given out to the other owners of the post. Each owner recieves NEWS according to what portion ownership they have.
 
 Upvoting a comment causes it's parent post to increase in value by (P3)(1-P)(X), and grandparent post increases by (P3)^2(1-P)^2(X)...
 
@@ -58,20 +58,20 @@ The owners of the parent post get paid (P3)(P)(1-P)(X), and owners of grandparen
 For the upvote transaction to be valid, you must own >=0 funds at the end.
 
 ### downvoting
-When downvoting, you spend X coins where X is above a limit. The post you downvoted loses X value.
+When downvoting, you spend X NEWS where X is above a limit. The post you downvoted loses X value.
 
 ### creating a post
-When creating a post, you spend X coins. The value of the post is X. You own X of the post, which is all of the post.
+When creating a post, you spend X NEWS. The value of the post is X. You own X of the post, which is all of the post.
 
 ### user names
-* getting/changing users name costs a certain amount of coins. 
+* getting/changing users name costs a certain amount of NEWS. 
 * each name can only be associated with one public key at a time.
 * When getting/changing user name is when you optionally give your vote for the shareholder raffle. This vote is a dictionary containing the names of some or all of the constants in the system, and what you want those constants to be.
 * Every block, the user name loses a small amount of value. If the user name runs out of money, then it gets completely deleted, and you permanently lose any reputation associated to that name.
 
 ### add reputation to a public key
 * You give the user name associated with the public key.
-* It costs X coins, where X is above some minimum.
+* It costs X NEWS, where X is above some minimum.
 * The user name increase in reputation by X.
 * If that user changes names later, he takes the reputation with him.
 
