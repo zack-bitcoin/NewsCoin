@@ -1,12 +1,6 @@
 import string,cgi,time, json, random, copy, os, copy, urllib, go, urllib2, time
 import pybitcointools as pt
 import state_library
-try:
-    from jsonrpc import ServiceProxy
-except:
-    from bitcoinrpc import AuthServiceProxy as ServiceProxy       
-#bitcoin = ServiceProxy("http://user:HkTlSzJkY7@127.0.0.1:8332/")
-#bitcoin=ServiceProxy("http://:hfjkdahflkjsdfa@127.0.0.1:8331/")#actually litecoin
 genesis={'zack':'zack', 'length':-1, 'nonce':'22', 'sha':'00000000000'}
 genesisbitcoin=289902-1224#1220
 #genesisbitcoin=516070#lazy, only wait 6 seconds per block.
