@@ -1,8 +1,290 @@
+import time, script, leveldb, copy, random, json
+import pybitcointools as pt
+VERSION='first'
+DB=leveldb.LevelDB('DB.db')
+def package(dic):
+    return json.dumps(dic)
+def unpackage(dic):
+    return json.loads(dic)
+            
+#we need a db of all unspent txid, along with their value, and scriptsigs. When transactions become spent, only keep the lowest branch of the merkle tree.
+def deterministic_dic(dic):
+    out=''
+    for key in sorted(dic.keys()):
+        if type(dic[key])==type([1,2]):
+            string=str(key)+':'
+            for i in sorted(dic[key]):
+                string+=str(i)+','
+        elif type(dic[key])==type({'a':1}):
+            string+='{'
+            string+=deterministic_dic(dic[key])
+            string+='}'
+        else:
+            string=str(key)+':'+str(dic[key])+','
+        out+=string
+    return out
+def txid(tx):
+    return pt.sha256(deterministic_dic(tx))
+def make_genesis(pubkeyhash):
+    a= {'version':VERSION,
+        #        'hashPrevBlock':_,
+        # 'target':_,#hash must be lower than this num
+        'time':time.time(),
+        #'nonce':_,
+        'length':0,
+        'transactions':[make_coinbase(pubkeyhash)]}
+    a=unpackage(package(a))
+    return a
+def make_block(prev_block, transactions, pubkeyhash):
+    transactions.append(make_coinbase(pubkeyhash))
+    out={'version':VERSION,
+         'time':time.time(),
+         'transactions':transactions,
+         'length':prev_block['length']+1,
+         'hashPrevBlock':txid(prev_block)}
+    out=unpackage(package(out))
+    return out
+def add_block(block):
+    if block==False:
+        return
+    length=block['length']
+    #replace tx in block with txid
+    DB.Put(str(length), package(block))
+    for tx in block['transactions']:
+        DB.Put(txid(tx), package(tx))
+        #update info in the state according to tx
+def delete_block():
+    length=current_length()
+    block=db_get(length)
+    for tx in block['transactions']:
+        DB.Delete(txid(tx))
+    DB.Delete(str(length))
+def load_txs():
+    try:
+        out=db_get('txs')
+    except:
+        reset_txs()
+        out=[]
+    return out
+def add_txs(txs):
+    for tx in txs:
+        add_tx(tx)
+def add_tx(tx):
+    txs=load_txs()
+    if verify_tx(tx):
+        txs.append(tx)
+def reset_txs():
+    return DB.Put('txs', package([]))
+def spend_tx(txid):
+    tx=db_get(txid)
+    tx['status']='spent'
+    DB.Put(txid,package(tx)) 
+def buffer_0(string, length):
+    while len(string)<length:
+        string='0'+string
+    return string
+def POW(block, hashes, target):
+    print('in POW')
+    block[u'nonce']=0
+    while txid(block)>target:
+        block[u'nonce']+=1
+        if block[u'nonce']>=hashes:
+            return False
+    print('hash: ' +str(txid(block)))
+#    print('diff: ' +str(target))
+    return block
+target='0000'+'f'*60
+def tx_check(tx):
+    for s in tx['inputs']:
+        txid_in=s['txid']
+        try:
+            print('txid_in: ' +str(txid_in))
+            tx_in=db_get(txid_in)
+        except:
+            print('1aa')
+            return False
+        if tx_in['status']=='spent':
+            print('2aa')
+            return False
+        if not checkSig(s['scriptSig'],tx_in['outputs']['scriptPubKey']):
+            print('3aa')
+            return False
+    #check that inputs are worth more than outputs
+    return True
+def block_check(block):
+    print(block['length'])
+    prev_block=db_get(block['length']-1)
+    a=0#there can only be 1 coinbase transaction.
+    '''
+    for tx in block['transactions']:
+        if tx['inputs'][0]['txid']==0 and a==0:
+            a=1
+        elif not tx_check(tx):
+            print('bad tx')
+            return False
+    '''
+    print('block: ' +str(block))
+    print('prev_block: ' +str(prev_block))
+    if block['length']!=prev_block['length']+1:
+        print('wrong length')
+        return False
+    if block['hashPrevBlock']!=txid(prev_block):
+        print('block: ' +str(block))
+        print('prev_block: ' +str(prev_block))
+        print('txid: ' +str(txid(prev_block)))
+        print('wrong prev_block hash')
+        return False
+    if txid(block)>target:
+        print('block : ' +str(block))
+        print(txid(block))
+        print('not difficult enough hash')
+        return False
+    if block['version']!=VERSION:
+        print('wrong version')
+        return False
+    return True
+def send_command(peer, command):
+    command['version']=VERSION
+    url=peer.format(package(command).encode('hex'))
+    print('in send command')
+    time.sleep(1)#so we don't DDOS the networking computers which we all depend on.
+    if 'onion' in url:
+        try:
+            print('trying privoxy method')
+            proxy_support = urllib2.ProxyHandler({"http" : "127.0.0.1:8118"})
+            opener = urllib2.build_opener(proxy_support) 
+            out=opener.open(url)
+            out=out.read()
+            print('privoxy succeeded')
+        except:
+            print('url: ' +str(url))
+            out={'error':'cannot connect to peer'}
+    else:
+        try:
+            print('attempt to open: ' +str(url))
+            URL=urllib.urlopen(url)
+            out=URL.read()
+        except:
+            print('url: ' +str(url))
+            out={'error':'cannot connect to peer'}
+    try:
+        return unpackage(out).decode('hex')
+    except:
+        return out
+def pushtx(tx, peers):
+    for p in peers:
+        send_command(p, {'type':'pushtx', 'tx':tx})
+#block_load
+def db_get(n):
+    return unpackage(DB.Get(str(n)))
+def pushblock(block, peers):
+    for p in peers:
+        send_command(p, {'type':'pushblock', 'block':block})    
+def fork_check(blocks):
+    #looks at some blocks obtained from a peer. If we are on a different fork than the partner, this returns True. If we are on the same fork as the peer, then this returns False.
+    length=current_length()
+    block=db_get(length)
+    recent_hash=txid(block)
+    hashes=filter(lambda x: txid(x)==recent_hash, newblocks)
+    return len(hashes)==0
+
+def peers_check(peers):
+    for peer in peers:
+        peer_check(peer)
+def peer_check(peer):
+    cmd=(lambda x: send_command(peer, x))
+    block_count=cmd({'type':'blockCount'})
+    print('block count: ' +str(block_count))
+    if type(block_count)!=type({'a':1}):
+        return 
+    if 'error' in block_count.keys():
+        return         
+    length=current_length()
+    ahead=int(block_count['length'])-length
+    if ahead < 0:
+        print('len chain: ' +str(len(chain)))
+        print('length: ' +str(int(block_count['length'])+1))
+        try:
+            pushblock(db_get(str(block_count['length']+1)), [peer])
+        except:
+            pass
+#        if db_ex=='_miner':
+#            probability(0.2, chain_unpush(db_ex))
+        return []
+    if ahead == 0:#if we are on the same block, ask for any new txs
+        print('ON SAME BLOCK')
+        block=db_get(length)
+        if txid(block)!=block_count['recent_hash']:
+            delete_block()
+            print('WE WERE ON A FORK. time to back up.')
+            return []
+        my_txs=load_txs()
+        txs=cmd({'type':'transactions'})
+        add_txs(txs)
+        pushers=[x for x in my_txs if x not in txs]
+        for push in pushers:
+            pushtx(push, [peer])
+        return []
+#    if db_ex=='_miner':
+#        probability(0.03, chain_unpush(db_ex))
+    start=length-30
+    if start<0:
+        start=0
+    if ahead>500:
+        end=length+499
+    else:
+        end=block_count['length']
+    blocks= cmd({'type':'rangeRequest', 
+                 'range':[start, end]})
+    if type(blocks)!=type([1,2]):
+        return []
+    times=1
+    while fork_check(blocks) and times>0:
+        times-=1
+        delete_block()
+    for block in blocks:
+        push_block(block)
+        if block_check(block):
+            add_block(block)
+
+def current_length():
+    i=0
+    while True:
+        try:
+            DB.Get(str(i))
+        except:
+            return i-1
+        i+=1
+def mine(hashes_till_check, reward_address):
+    #try to mine a block that many times. add it to the database if we find one.
+    print('in mine')
+    length=current_length()
+    if length==-1:
+        block=make_genesis(reward_address)
+        txs=[]
+    else:
+        prev_block=db_get(str(length))
+        txs=load_txs()
+        block=make_block(prev_block, txs, reward_address)
+    block=POW(block, hashes_till_check, target)
+    add_block(block)
+def mainloop(reward_address, peers, hashes_till_check):
+#    while True:
+    for i in range(10):
+        peers_check(peers)
+        mine(hashes_till_check, reward_address)               
+
+mainloop('zack', [], 100000000)
+
+
+
+
+'''
 import string,cgi,time, json, random, copy, os, copy, urllib, go, urllib2, time
 import pybitcointools as pt
 import state_library
 genesis={'zack':'zack', 'length':-1, 'nonce':'22', 'sha':'00000000000'}
-genesisbitcoin=289902-1224#1220
+#genesisbitcoin=289902-1224#1220
 #genesisbitcoin=516070#lazy, only wait 6 seconds per block.
 chain=[genesis]
 chain_db='chain.db'
@@ -467,3 +749,4 @@ def peer_check(peer):
         times-=1
         chain_unpush()
     return blocks
+'''
