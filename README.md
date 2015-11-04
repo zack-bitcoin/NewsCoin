@@ -1,3 +1,7 @@
+This blockchain is not maintained. It was a rough draft for Flying Fox.
+https://github.com/BumblebeeBat/FlyingFox
+
+
 NEWScoin
 ==========
 
